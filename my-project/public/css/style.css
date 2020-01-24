@@ -1,0 +1,38 @@
+header {
+    text-align: center;
+    padding-top: 1em;
+    padding-bottom: 3em;
+}
+
+#form {
+    margin-left: 12em;
+    padding-bottom: 3em;
+}
+
+h3 {
+    color: #474946;
+    text-align: center;
+}
+
+#list-header {
+    font-weight: bold;
+}
+
+.red {
+    color: tomato;
+}
+
+#compra {
+    margin: 0 4em 0 4em;
+}
+
+.total {
+    font-size: xx-large;
+    text-align: center;
+    margin-top: -1.5em;
+}
+
+li span {
+    width: 20%;
+    text-align: center;
+}

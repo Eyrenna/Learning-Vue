@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="img/logo.ico">
+    <title>EireVan</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+</head>
+
+<body>
+    <noscript>
+      <strong>Estamos actualizando nuestros servidores. Prueba de nuevo más tarde</strong>
+    </noscript>
+
+    <!-- CABECERA -->
+    <header>
+        <img src="img/logo.png">
+    </header>
+
+    <!-- FORMULARIO -->
+    <div id="productos">
+        <div id="form" class="needs-validation" novalidate>
+            <div class="form-row">
+                <div class="col-md-6 mb-3">
+                    <select class="custom-select" v-model="selected" required>
+                      <option v-for="item in items" v-bind:key="item.id">{{ item.nombre }}</option>
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, introduce un producto.
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <input type="number" class="form-control" v-model.number="numero" placeholder="¿Cuántos?" required>
+                    <div class="invalid-feedback">
+                        Por favor, introduce una cantidad.
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <button class="btn btn-success" type="submit" v-on:click="addItem">Añadir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOTAL COMPRA -->
+        <!-- Condición: si aun no se han añadido elmentos no se mostrará el total -->
+        <div v-if="this.precioTotalCompra!=0" class="total alert alert-success">
+            <span>Total</span>&nbsp;
+            <span>{{this.precioTotalCompra}}</span>
+        </div>
+        <!--Fin condición-->
+
+        <!-- ELEMENTOS INTRODUCIDOS EN LA LISTA DE LA COMPRA -->
+        <div>
+            <h3>Tu lista de la compra</h3>
+            <ul id="compra" class="list-group">
+                <!-- LIST-HEADER -->
+                <li id="list-header" class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>Nombre</span>
+                    <span>Cantidad</span>
+                    <span>Precio Unitario</span>
+                    <span>Precio Total</span>
+                    <span></span>
+                </li>
+                <!-- LIST-ITEMS -->
+                <li id="list-items" class="list-group-item d-flex justify-content-between align-items-center" v-for="item in items" v-bind:key="item.id" v-if="item.added==true">
+                    <span>{{item.nombre}}</span>
+                    <span>
+                      <span class="badge badge-success badge-pill">{{item.cantidad}}</span>
+                    <span>
+                          <button class="badge badge-light badge-pill" type="button" v-on:click="plusItem(item.nombre)">+</button>
+                      </span>
+                    <span>
+                          <button class="badge badge-light badge-pill" type="button" v-on:click="subtractItem(item.nombre)">-</button>
+                      </span>
+                    </span>
+                    <!-- Condición: si el precioUnitario es menor a 10 -->
+                    <span v-bind:class="{'red':item.precioUnitario<10}">{{item.precioUnitario}} €</span>
+                    <!-- Final Condición -->
+                    <span>{{item.precioUnitario * item.cantidad}} €</span>
+                    <span><button class="btn btn-danger" type="button" v-on:click="deleteItem(item.nombre)">Cancela</button></span>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <script>
+        // LISTA DE PRODUCTOS
+        var productos = new Vue({
+            el: '#productos',
+            data: {
+                selected: null,
+                numero: null,
+                items: [{
+                    id: 1,
+                    nombre: 'Carne de Angus',
+                    precioUnitario: 15,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 2,
+                    nombre: 'Carne de Hereford',
+                    precioUnitario: 17,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 3,
+                    nombre: 'Buey de Mar',
+                    precioUnitario: 17,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 4,
+                    nombre: 'Salmón',
+                    precioUnitario: 17,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 5,
+                    nombre: 'Cigala',
+                    precioUnitario: 15,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 6,
+                    nombre: 'Vieiras',
+                    precioUnitario: 12,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 7,
+                    nombre: 'Navajas',
+                    precioUnitario: 12,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 8,
+                    nombre: 'Nécora',
+                    precioUnitario: 13,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 9,
+                    nombre: 'Mantequilla irlandesa',
+                    precioUnitario: 4,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 10,
+                    nombre: 'Queso Chedar Light',
+                    precioUnitario: 4,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 11,
+                    nombre: 'Queso Chedar Curado',
+                    precioUnitario: 4.5,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 12,
+                    nombre: 'Queso Chedar Extra Curado',
+                    precioUnitario: 5,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 13,
+                    nombre: 'Queso Artesanal de Vaca',
+                    precioUnitario: 0.90,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 14,
+                    nombre: 'Queso Artesanal de Cabra',
+                    precioUnitario: 1.2,
+                    added: false,
+                    cantidad: 0
+                }, {
+                    id: 15,
+                    nombre: 'Queso Artesanal de Oveja',
+                    precioUnitario: 1,
+                    added: false,
+                    cantidad: 0
+                }]
+            },
+
+            methods: {
+                addItem: function() {
+                    for (const item of this.items) {
+                        if (item.nombre == this.selected) {
+                            item.added = true;
+                            item.cantidad = this.numero;
+                        }
+                    }
+                },
+                deleteItem: function(nombre) {
+                    for (const item of this.items) {
+                        if (item.nombre == nombre) {
+                            item.added = false;
+                            item.cantidad = 0;
+                        }
+                    }
+                },
+                plusItem: function(nombre) {
+                    for (const item of this.items) {
+                        if (item.nombre == nombre) {
+                            item.cantidad += 1;
+                        }
+                    }
+                },
+                subtractItem: function(nombre) {
+                    for (const item of this.items) {
+                        if (item.nombre == nombre) {
+                            item.cantidad -= 1;
+                            if (item.cantidad == 0) {
+                                item.added = false;
+                            }
+                        }
+                    }
+                }
+            },
+
+            computed: {
+                precioTotalCompra: function() {
+                    let result = 0;
+                    for (const item of this.items) {
+                        result += item.precioUnitario * item.cantidad;
+                    }
+                    return result;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
